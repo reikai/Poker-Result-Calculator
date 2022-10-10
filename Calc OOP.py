@@ -18,6 +18,32 @@ class Player:
     def func(self, name, cashout):
         self.cashout = int(input('How much did {} cashout with?'.format(self.name)))
         
+    def pay(self, winner, loserdebt):
+        if self.gameresult > winner.gameresult:
+            # Overpayment. $50 debt, $25 winnings
+            print("{} pays {} {}.".format(self.name, winner.name, winner.gameresult))
+            loserdebt = loserdebt - winner.gameresult #reduce loserdebt
+            self.gameresult = self.gameresult - winner.gameresult # $50 debt reduced by $25 winnings
+            winner.gameresult = 0 #winner no longer owed
+            return loserdebt
+        elif self.gameresult < winner.gameresult: 
+            # Underpayment. Think $50 debt, $60 winnings
+            if self.gameresult == 0:
+                return loserdebt
+            else: 
+                print("{} pays {} {}.".format(self.name, winner.name, self.gameresult))
+                loserdebt = loserdebt - self.gameresult #reduce loserdebt
+                winner.gameresult = winner.gameresult - self.gameresult # $60 winnings reduced by $50
+                loser.gameresult = 0 #debtor is free! $50 paid, loser is clear
+                return loserdebt
+        elif self.gameresult == winner.gameresult: 
+            # Exact payment. $50 debt, $50 winnings.
+            print("{} pays {} {}.".format(self.name, winner.name, self.gameresult))
+            loserdebt = loserdebt - self.gameresult 
+            self.gameresult = 0
+            winner.gameresult = 0
+            return loserdebt
+        
 
 numplayers = int(input('How many players do you have?\n'))
 players = [Player("Player {}".format(i+1), 0, 0, 0) for i in range(numplayers)]        
@@ -56,10 +82,6 @@ for player in players:
         print("I'm not sure what happened.")
 
 
-# the losers have to pay up! The winners get their balanced reduced to zero.
-# if all winners player.gameresult totals == 0, finish the pay loop?
-# To store the payments table, you probably need pandas
-
 loserdebt = 0
 
 for winner in winners:
@@ -81,64 +103,34 @@ while loserdebt != 0:
             for winner in winners: #this person is owed money
                 if winner.gameresult > 0: #this person hasn't been paid fully
                     #PAYMENT TIME. HOW MUCH? :D :D :D :D :D :D 
-                    if loser.gameresult > winner.gameresult:
-                        # Overpayment. $50 debt, $25 winnings
-                        print("{} pays {} {}.".format(loser.name, winner.name, winner.gameresult))
-                        loserdebt = loserdebt - winner.gameresult #reduce loserdebt
-                        loser.gameresult = loser.gameresult - winner.gameresult # $50 debt reduced by $25 winnings
-                        winner.gameresult = 0 #winner no longer owed
-                    elif loser.gameresult < winner.gameresult: 
-                        # Underpayment. Think $50 debt, $60 winnings
-                        if loser.gameresult == 0:
-                            break
-                        print("{} pays {} {}.".format(loser.name, winner.name, loser.gameresult))
-                        loserdebt = loserdebt - loser.gameresult #reduce loserdebt
-                        winner.gameresult = winner.gameresult - loser.gameresult # $60 winnings reduced by $50
-                        loser.gameresult = 0 #debtor is free! $50 paid, loser is clear
-                    elif loser.gameresult == winner.gameresult: 
-                        # Exact payment. $50 debt, $50 winnings.
-                        print("{} pays {} {}.".format(loser.name, winner.name, loser.gameresult))
-                        loserdebt = loserdebt - loser.gameresult 
-                        loser.gameresult = 0
-                        winner.gameresult = 0
+                    loserdebt = loser.pay(winner, loserdebt)
+                    
+                    # if loser.gameresult > winner.gameresult:
+                    #     # Overpayment. $50 debt, $25 winnings
+                    #     print("{} pays {} {}.".format(loser.name, winner.name, winner.gameresult))
+                    #     loserdebt = loserdebt - winner.gameresult #reduce loserdebt
+                    #     loser.gameresult = loser.gameresult - winner.gameresult # $50 debt reduced by $25 winnings
+                    #     winner.gameresult = 0 #winner no longer owed
+                    # elif loser.gameresult < winner.gameresult: 
+                    #     # Underpayment. Think $50 debt, $60 winnings
+                    #     if loser.gameresult == 0:
+                    #         break
+                    #     print("{} pays {} {}.".format(loser.name, winner.name, loser.gameresult))
+                    #     loserdebt = loserdebt - loser.gameresult #reduce loserdebt
+                    #     winner.gameresult = winner.gameresult - loser.gameresult # $60 winnings reduced by $50
+                    #     loser.gameresult = 0 #debtor is free! $50 paid, loser is clear
+                    # elif loser.gameresult == winner.gameresult: 
+                    #     # Exact payment. $50 debt, $50 winnings.
+                    #     print("{} pays {} {}.".format(loser.name, winner.name, loser.gameresult))
+                    #     loserdebt = loserdebt - loser.gameresult 
+                    #     loser.gameresult = 0
+                    #     winner.gameresult = 0
                           
 # YESSSSSSSSSSSSSSSSSSSSS                    
 
 print("\nSUMMARY: -------------------")
 print("Players bought in for {}, and exited the game with {}.".format(totalbuyin, totalcashout))
 print("Remaining debts between players after payments: {}".format(loserdebt))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
