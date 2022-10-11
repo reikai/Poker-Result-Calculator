@@ -6,7 +6,7 @@ Created on Sat Oct  8 12:50:57 2022
 """
 
 class Player:
-    def __init__(self, name, buyin, cashout, gameresult):
+    def __init__(self, name, buyin=0, cashout=0, gameresult=0):
         self.name = name
         self.buyin = buyin
         self.cashout = cashout
@@ -46,7 +46,7 @@ class Player:
         
 
 numplayers = int(input('How many players do you have?\n'))
-players = [Player("Player {}".format(i+1), 0, 0, 0) for i in range(numplayers)]        
+players = [Player("Player {}".format(i+1)) for i in range(numplayers)]        
 
 totalbuyin = 0
 totalcashout = 0
